@@ -1,0 +1,4 @@
+update "SearchSuggestions" set suggestion= replace(suggestion, 'see more', '') where suggestion like '%see more%' 
+update "SearchSuggestions" set suggestion= replace(suggestion, 'See more', '') where suggestion like '%See more%' 
+
+update "SearchSuggestions" set suggestion= replace(suggestion, '…', ' ') where suggestion like '%…%'
