@@ -8,15 +8,13 @@ import utils
 def show_tfidf(tfidf, vocab, filename):
     # [n_doc, n_vocab]
     plt.imshow(tfidf, cmap="YlGn",vmin =tfidf.min(), vmax=tfidf.max())
-    #xticks是X轴的坐标轴刻度, yticks是Y轴的坐标轴刻度
-    #tfidf.shape[1]=47 是所有全部47个单词
     xt = np.arange(tfidf.shape[1])
     plt.xticks(xt, vocab, fontsize=6, rotation=90)
-    #tfidf.shape[0]=15 是全部15篇文章 
+    #tfidf.shape[0]=15
     yt = np.arange(tfidf.shape[0])
     #yt=[ 0  1  2  3  4  5  6  7  8  9 10 11 12 13 14]
     plt.yticks(yt, np.arange(1, tfidf.shape[0]+1), fontsize=6)
-    #tight_layout()会自动调整子图参数,使之填充整个图像区域
+    #tight_layout()
     plt.tight_layout()
     plt.savefig("./visual/results/%s.png" % filename, format="png", dpi=100)
     plt.show()
