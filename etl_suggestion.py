@@ -46,7 +46,6 @@ def execute_sql(sql):
 def max_id_number(column, table):
     sql = f"""SELECT COALESCE(max({column}),0)  FROM  {table} """
     max_id = execute_sql(sql)[0][0]
-    # print(f"查询得到的最大ID是=={max_id}")
     return max_id
 
 
@@ -61,8 +60,6 @@ def df_to_dt(table, columns, df):
     cursor.close()
     conn.close()
 
-
-#数据库查询后，直接生成为dataframe格式
 def database_to_pd(sql):
     conn = connect()
     results = pd.read_sql(sql, conn)
@@ -70,27 +67,15 @@ def database_to_pd(sql):
     return results
 
 
-"""
-两种模式：
-一种是简单模式simple，只去除;分号十分过分的符号，目的是为了导入数据库原始数据.
-另一种是完全模式，去除各种复杂的怪异符号，目的是为了清洗数据.
-默认为简单模式
-"""
 def clear_spec(mystr, type="simple"):
     if type == "simple":
         results1 = re.sub("""[;"]+""", "", mystr)
-        # print(results1)
-        #去除不可见字符
         results = re.sub("""[\001\002\003\004\005\006\007\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1a]+""", "", results1)
     if type == "full":
         results1 = re.sub("""[0-9!"#$%&()*+,-./:;<=>?@，。?★、￥…【】《》？“”‘'！[\\]^_`{|}~]+""", "", mystr)
-        # print(results1)
-        #去除不可见字符
         results = re.sub("""[\001\002\003\004\005\006\007\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1a]+""", "", results1)
     return results
 
-
-#把列表转成空格隔开的句子
 def list_sentence(mylist):
     sentence = ""
     for s in mylist:
@@ -113,8 +98,6 @@ def deletewords(x):
     results = list_sentence(filtered)
     return results
 
-
-#比较两个dataframe数据集
 def find_new_data(df1, df2):
     result = pd.merge(df1, df2, on=["suggestion"], how="left")
     # print("-" * 30)
@@ -124,7 +107,6 @@ def find_new_data(df1, df2):
     result.drop(['id'], axis=1, inplace=True)
     # print(result.head())
     if result.empty:
-        # print("没有新增数据，不需要导入")
         error = 1
     else:
         result.index = Series(range(len(result)))
@@ -140,14 +122,12 @@ def etl(my_filename, my_sort):
     df.rename(columns={0: "suggestion_old"}, inplace=True)
     df["suggestion"] = df["suggestion_old"].apply(lambda x: clear_spec(x, type="simple"))
 
-
-    #开始比较，将已经有了的数据从df中删除掉，只留下新的数据\
     df1 = df
     sql = """select id,suggestion from "SearchSuggestions"  """
     df2 = database_to_pd(sql)
     df3 = find_new_data(df1, df2)
     if df3[1] == 1:
-        print("没有新增数据，不需要导入")
+        pass
     else:
         df = df3[0]
         # print(df)
@@ -161,7 +141,6 @@ def etl(my_filename, my_sort):
         df['"createdAt"'] = datetime.datetime.today()
         df['"updatedAt"'] = datetime.datetime.today()
         df['sort'] = my_sort
-        print(f"有{df.shape[0]}条数据导入")
         columns = df.columns
         df_to_dt('"SearchSuggestions"', columns, df)
 
@@ -169,13 +148,12 @@ def etl(my_filename, my_sort):
 def etl2(my_df, my_sort):
     my_df.rename(columns={0: "suggestion_old"}, inplace=True)
     my_df["suggestion"] = my_df["suggestion_old"].apply(lambda x: clear_spec(x, type="simple"))
-    #开始比较，将已经有了的数据从df中删除掉，只留下新的数据\
     df1 = my_df
     sql = """select id,suggestion from "SearchSuggestions"  """
     df2 = database_to_pd(sql)
     df3 = find_new_data(df1, df2)
     if df3[1] == 1:
-        print("没有新增数据，不需要导入")
+        pass
     else:
         my_df = df3[0]
         # print(df)
@@ -189,7 +167,6 @@ def etl2(my_df, my_sort):
         my_df['"createdAt"'] = datetime.datetime.today()
         my_df['"updatedAt"'] = datetime.datetime.today()
         my_df['sort'] = my_sort
-        print(f"有{my_df.shape[0]}条数据导入")
         columns = my_df.columns
         df_to_dt('"SearchSuggestions"', columns, my_df)
 
