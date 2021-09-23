@@ -86,8 +86,6 @@ def list_sentence(mylist):
     return result
 
 
-
-#这里开始准备去除各种没有用的词，然后重新组成简洁的句子
 def deletewords(x):
     # tokens = nltk.word_tokenize(x)
     # test_words = [word.lower() for word in tokens]
