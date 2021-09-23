@@ -100,7 +100,7 @@ def get_keywords(n=2):
         col = tf_idf[:, c]
         idx = np.argsort(col)[-n:]
         top_two_words = [i2v[i] for i in idx]
-        print("doc{}, top{} 关键词 {}".format(c, n, top_two_words))
+        print("doc{}, top{} {}".format(c, n, top_two_words))
 
 
 def cosine_similarity(q, _tf_idf):
